@@ -31,8 +31,39 @@ public class BufferTest {
     }
 
     @Test
+    public void compactTest() {
+        // 如果 Buffer 中有未讀取的資料，而且想稍後再讀取，但是您需要先進行一些寫操作，那就呼叫 compact()
+        displayBuffer(buffer); // pos=0 lim=1024 cap=1024
+
+        buffer.put("abcdefghijklmnopqrstuvwxyz".getBytes());
+        displayBuffer(buffer); // pos=26 lim=1024 cap=1024
+
+        buffer.flip();
+        displayBuffer(buffer); // pos=0 lim=26 cap=1024
+
+        byte[] barray = new byte[buffer.limit()];
+
+        System.out.println(buffer.get(barray, 0, 2)); // pos=2 lim=26 cap=1024
+
+        buffer.compact(); // 將 position 設成最後一個未讀元素後面，所以是 26-2, limit 變成 capacity，而已讀元素就不見了
+        // buffer 已準備好進行寫入，但是不會覆蓋未讀取的資料
+        displayBuffer(buffer); // pos=24 lim=1024 cap=1024
+
+        buffer.put("123".getBytes());
+        displayBuffer(buffer); // pos=27 lim=1024 cap=1024
+
+        buffer.flip();
+        displayBuffer(buffer); // pos=0 lim=27 cap=1024
+
+        for (var i = 0; i < buffer.limit(); i++) {
+            System.out.println((char) buffer.get(i));
+        }
+    }
+
+
+    @Test
     public void markTest() {
-        // mark 會記錄當下的 position 位置，可用 reset 還原到 mark 的位置，預設為 -1
+        // mark 會記錄當下的 position 位置，然後可用 reset 還原到 mark 的位置，預設為 -1
         displayBuffer(buffer); // pos=0 lim=1024 cap=1024
 
         buffer.put(data.getBytes());
