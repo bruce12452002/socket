@@ -24,22 +24,21 @@ public class BioThreadPoolServer {
             es.execute(() -> { // 2. 這裡就不是 new Thread 了
                 try (
                         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-                        PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
                 ) {
-                    String rMsg;
+                    String line;
                     while (true) {
                         System.out.println("bio thread pool server 讀");
-                        if ((rMsg = in.readLine()) != null) {
-                            out.println(rMsg + "哈哈");
-                            out.flush();
+                        if ((line = in.readLine()) != null) {
+                            System.out.println("收到了=" + line + " IP=" + socket.getRemoteSocketAddress());
                         } else {
                             break;
                         }
                     }
                 } catch (IOException e) {
-                    e.getMessage();
+                    System.out.println(socket.getRemoteSocketAddress() + "斷線了");
+                    System.out.println(e.getMessage());
                 }
-            }); // 3. 因為為是 new Thread，所以就沒有 start 方法了
+            }); // 3. 因為不是 new Thread，所以就沒有 start 方法了
         }
     }
 }
