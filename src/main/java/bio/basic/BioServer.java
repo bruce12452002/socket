@@ -10,7 +10,7 @@ public class BioServer {
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = new ServerSocket(8080);
         System.out.println("server 已啟動");
-        Socket socket = serverSocket.accept();
+        Socket socket = serverSocket.accept(); // 只接放一個 client
         System.out.println("客戶端還沒連時，這行不會印");
         InputStream in = socket.getInputStream();
 

@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
  */
 public class BioThreadPoolServer {
     public static void main(String[] args) throws Exception {
-        ExecutorService es = Executors.newFixedThreadPool(50); // 1. 使用 ThreadPool 必需創建的
-        ServerSocket serverSocket = new ServerSocket(8888);
+        ExecutorService es = Executors.newFixedThreadPool(2); // 1. 使用 ThreadPool 必需創建的，Client 超過這裡設定的執行緒數會阻塞
+        ServerSocket serverSocket = new ServerSocket(8080);
         System.out.println("bio thread pool server 啟動了！");
 
         while (true) {
@@ -23,16 +23,13 @@ public class BioThreadPoolServer {
 
             es.execute(() -> { // 2. 這裡就不是 new Thread 了
                 try (
-                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                        BufferedReader in = new BufferedReader(
+                                new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 ) {
                     String line;
-                    while (true) {
-                        System.out.println("bio thread pool server 讀");
-                        if ((line = in.readLine()) != null) {
-                            System.out.println("收到了=" + line + " IP=" + socket.getRemoteSocketAddress());
-                        } else {
-                            break;
-                        }
+                    while ((line = in.readLine()) != null) {
+                        System.out.print("收到了=" + line + " IP=" + socket.getRemoteSocketAddress());
+                        System.out.println(" " + Thread.currentThread().getName());
                     }
                 } catch (IOException e) {
                     System.out.println(socket.getRemoteSocketAddress() + "斷線了");
